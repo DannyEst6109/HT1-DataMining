@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 from scipy.stats import kurtosis
 
 # Cargar datos
-datos = pd.read_csv("movies.csv")
+datos = pd.read_csv("movies.csv", encoding='ISO-8859-1')
 
 # 1. Resumen de datos
 print(datos.describe())
 
 # 4.12. Asociación de ciertos meses de lanzamiento con mejores ingresos
+print("4.12")
 datos["releaseMonth"] = pd.to_datetime(datos["releaseDate"]).dt.month
 print(datos.groupby("releaseMonth")["revenue"].mean())
 
