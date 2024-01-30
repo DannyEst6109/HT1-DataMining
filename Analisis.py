@@ -110,7 +110,6 @@ plt.ylabel("Votos Promedio")
 plt.title("Relación entre Presupuesto y Votos Promedio")
 plt.show()
 
-
 #¿Cuántas películas tienen una calificación de votos promedio mayor a 8?
 num_peliculas_votos_altos = len(datos[datos["voteAvg"] > 8])
 print(f"Número de películas con votos promedio mayor a 8: {num_peliculas_votos_altos}")
