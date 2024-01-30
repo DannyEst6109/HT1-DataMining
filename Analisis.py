@@ -9,6 +9,68 @@ datos = pd.read_csv("movies.csv", encoding='ISO-8859-1')
 # 1. Resumen de datos
 print(datos.describe())
 
+
+# 4.1. Top 10 películas con más presupuesto
+top_budget = datos.nlargest(10, "budget")[["title", "budget"]]
+print(top_budget)
+
+# 4.2. Top 10 películas con más ingresos
+top_revenue = datos.nlargest(10, "revenue")[["title", "revenue"]]
+print(top_revenue)
+
+# 4.3. Película con más votos
+top_vote_count = datos.nlargest(1, "voteCount")[["title", "voteCount"]]
+print(top_vote_count)
+
+# 4.4. Peor película según votos
+worst_movie = datos.nsmallest(1, "voteAvg")[["title", "voteAvg"]]
+print(worst_movie)
+
+# 4.5. Histograma de películas por año
+datos["releaseYear"] = pd.to_datetime(datos["releaseDate"]).dt.year
+plt.hist(datos["releaseYear"], bins=100)
+plt.xlabel("Año")
+plt.ylabel("Cantidad de películas")
+plt.title("Cantidad de películas por año")
+plt.show()
+
+# 4.6. Género principal de las 20 películas más recientes
+top_20_recent_genres = datos.nlargest(20, "releaseYear")["genres"].str.split("|", expand=True).stack().value_counts().index[0]
+print(f"Género principal de las 20 películas más recientes: {top_20_recent_genres}")
+
+# Gráfico de barras de géneros
+genres_counts = datos["genres"].str.split("|", expand=True).stack().value_counts()
+plt.bar(genres_counts.index, genres_counts.values)
+plt.xlabel("Género")
+plt.ylabel("Cantidad de películas")
+plt.title("Cantidad de películas por género")
+plt.xticks(rotation=90)
+plt.show()
+
+# 4.7. Género principal de películas con mayores ingresos
+top_revenue_genre = datos.loc[datos.groupby("genres")["revenue"].idxmax()][["genres", "revenue"]]
+print(top_revenue_genre)
+
+# 4.8. Influencia de la cantidad de actores en los ingresos
+print(datos[["actorsAmount", "revenue"]].sort_values(by="revenue", ascending=False).head())
+
+# 4.9. Influencia de la cantidad de hombres y mujeres en el reparto en la popularidad y los ingresos
+print(datos[["castWomenAmount", "popularity"]].sort_values(by="popularity", ascending=False).head())
+print(datos[["castMenAmount", "popularity"]].sort_values(by="popularity", ascending=False).head())
+print(datos[["castWomenAmount", "revenue"]].sort_values(by="revenue", ascending=False).head())
+print(datos[["castMenAmount", "revenue"]].sort_values(by="revenue", ascending=False).head())
+
+# 4.10. Directores de las 20 películas mejor calificadas
+top_rated_directors = datos.nlargest(20, "voteAvg")[["director", "voteAvg"]]
+print(top_rated_directors)
+
+# 4.11. Correlación entre presupuestos y ingresos
+plt.scatter(datos["budget"], datos["revenue"])
+plt.xlabel("Presupuesto")
+plt.ylabel("Ingresos")
+plt.title("Presupuesto vs Ingresos")
+plt.show()
+
 # 4.12. Asociación de ciertos meses de lanzamiento con mejores ingresos
 print("4.12")
 datos["releaseMonth"] = pd.to_datetime(datos["releaseDate"]).dt.month
@@ -54,7 +116,10 @@ num_peliculas_votos_altos = len(datos[datos["voteAvg"] > 8])
 print(f"Número de películas con votos promedio mayor a 8: {num_peliculas_votos_altos}")
 
 #¿Cuál es la relación entre la cantidad de géneros y los ingresos de las películas?
-datos["num_genres"] = datos["genres"].apply(lambda x: x.count("|") + 1)
+
+datos["genres"] = datos["genres"].fillna("")
+
+datos["num_genres"] = datos["genres"].apply(lambda x: x.count("|") + 1 if "|" in x else 1)
 plt.scatter(datos["num_genres"], datos["revenue"])
 plt.xlabel("Cantidad de Géneros")
 plt.ylabel("Ingresos")
